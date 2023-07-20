@@ -3,3 +3,63 @@
     padding: 0;
     box-sizing: border-box;
 }
+
+body {
+    text-align: center;
+    min-height: 100vh;
+    display: grid;
+    grid-auto-rows: auto;
+    font-family: 'Urbanist', sans-serif;
+}
+
+button {
+    font-family: inherit;
+    font-size: 100%;
+    border: none;
+    padding: 20px 50px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+.title {
+    margin: 20px 0;
+    font-size: 3rem;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.gameboard {
+    display: grid;
+    aspect-ratio: 1 / 1;
+    width: min(80%, 500px);
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+}
+
+.square {
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 4.5rem;
+}
+
+.square:not(:nth-child(3n)) {
+    border-right: 2px solid #000;
+}
+
+.square:not(:nth-child(n + 7)) {
+    border-bottom: 2px solid #000;
+}
+
+.btn__start {
+    background: #5ba4fc;
+}
+
+.btn__reset {
+    background: #e33437;
+}

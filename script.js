@@ -2,6 +2,102 @@ const player = (name, mark) => {
     return { name, mark }
 }
 
+const displayController = (() => {
+    let container = document.querySelector('.container')
+    let startButton = document.querySelector('.btn__start')
+    let resetButton = document.querySelector('.btn__reset')
+    let playAgainButton = document.querySelector('.btn__playagain')
+    let modal = document.querySelector('.modal')
+    let modalPlayers = document.querySelector('.modal__content.players')
+    let modalWinner = document.querySelector('.modal__content.winner')
+    let error = document.querySelector('.error__message')
+
+    let namePlayer1 = document.querySelector('.name__player1')
+    let namePlayer2 = document.querySelector('.name__player2')
+    let nameWinner = document.querySelector('.name__winner')
+    container.style.display = 'none'
+    document.body.style.display = 'block'
+
+    const showGameboard = () => {
+        container.style.display = 'flex'
+        document.body.style.display = 'grid'
+        startButton.style.display = 'none'
+        modal.style.display = 'none'
+    }
+
+    const setNamePlayer = (player1, player2) => {
+        namePlayer1.textContent = player1;
+        namePlayer2.textContent = player2
+    }
+
+    const showModalWinner = () => {
+        if (gameBoard.checkWinner()) {
+            modal.style.display = 'block';
+            resetButton.style.display = 'inline-block';
+            modalPlayers.style.display = 'none';
+            modalWinner.style.display = 'block'
+            nameWinner.textContent = gameBoard.getNamePlayerWin() + ' has won'
+        }
+    }
+
+    const showDrawMessage = () => {
+        if (gameBoard.checkWinner() === false) {
+            modal.style.display = 'block';
+            resetButton.style.display = 'inline-block';
+            modalPlayers.style.display = 'none';
+            modalWinner.style.display = 'block'
+            nameWinner.textContent = 'Draw'
+        }
+    }
+
+    const resetNamePlayer = () => {
+        error.style.display = 'none'
+        document.querySelector('#player1').value = ''
+        document.querySelector('#player2').value = ''
+    }
+
+    resetButton.addEventListener('click', () => {
+        resetNamePlayer()
+        gameBoard.resetBoard()
+        modalWinner.style.display = 'none'
+        modalPlayers.style.display = 'block'
+        startButton.style.display = 'inline-block'
+    })
+
+    playAgainButton.addEventListener('click', () => {
+        modal.style.display = 'none'
+    })
+
+    const errorMessage = (player1, player2) => {
+        error.style.display = 'block'
+        if (player1 === '' || player2 === '') {
+            error.textContent = 'Entering names'
+        } else if (player1 === player2) {
+            error.textContent = 'Names must be different'
+        }
+    }
+
+    startButton.addEventListener('click', () => {
+        let player1 = document.querySelector('#player1').value
+        let player2 = document.querySelector('#player2').value
+        if (player1 === '' || player2 === '' || player1 === player2) {
+            errorMessage(player1, player2)
+            return
+        }
+        showGameboard()
+        setNamePlayer(player1, player2)
+        gameBoard.getPlayer(player1, player2)
+        gameBoard.createBoard()
+        gameBoard.addMark()
+    })
+
+    return {
+        showModalWinner,
+        showDrawMessage,
+    }
+
+})()
+
 const gameBoard = (() => {
     let board = new Array(9).fill(null);
     let container = document.querySelector('.gameboard');
@@ -14,10 +110,14 @@ const gameBoard = (() => {
         }
     }
 
-    const player1 = player('Player 1', 'X')
-    const player2 = player('Player 2', 'O')
-    let players = [player1, player2]
+    let players = []
     let playerTurn = 0;
+
+    const getPlayer = (player1, player2) => {
+        player1 = player(player1, 'X')
+        player2 = player(player2, 'O')
+        return players = [player1, player2]
+    }
 
     let totalX = [];
     let totalO = [];
@@ -47,13 +147,23 @@ const gameBoard = (() => {
                 }
                 board[index] = playerTurn % 2 ? 'X' : 'O'
                 if (checkWinner()) {
+                    displayController.showModalWinner()
                     return
+                } else if (checkWinner() === false) {
+                    displayController.showDrawMessage()
                 }
-                if (!board.some(mark => mark === null)) {
-                    console.log('Draw');
-                }
+
             })
         })
+    }
+
+    const getNamePlayerWin = () => {
+        let mark = playerTurn % 2 ? 'X' : 'O'
+        if (mark === 'X') {
+            return players[0].name
+        } else {
+            return players[1].name
+        }
     }
 
     const resetBoard = () => {
@@ -67,7 +177,7 @@ const gameBoard = (() => {
         playerTurn = 0
     }
 
-    let resetButton = document.querySelector('.btn__reset')
+    let resetButton = document.querySelector('.btn__playagain')
     resetButton.addEventListener('click', resetBoard)
 
     let wins = [
@@ -84,12 +194,13 @@ const gameBoard = (() => {
     const checkWinner = () => {
         for (let i = 0; i < wins.length; i++) {
             if (totalX.includes(wins[i][0]) && totalX.includes(wins[i][1]) && totalX.includes(wins[i][2])) {
-                console.log('Winner X');
                 return true
             } else if (totalO.includes(wins[i][0]) && totalO.includes(wins[i][1]) && totalO.includes(wins[i][2])) {
-                console.log('Winner O');
                 return true
             }
+        }
+        if (!board.some(mark => mark === null)) {
+            return false
         }
     }
 
@@ -97,34 +208,10 @@ const gameBoard = (() => {
         createBoard,
         addMark,
         checkWinner,
+        getPlayer,
+        getNamePlayerWin,
+        resetBoard,
     }
 })();
-
-const displayController = (() => {
-    let container = document.querySelector('.container')
-    let resetButton = document.querySelector('.btn__reset')
-
-    resetButton.style.display = 'none'
-    container.style.display = 'none'
-    document.body.style.display = 'block'
-
-    const setDisplayElement = () => {
-        resetButton.style.display = 'inline-block'
-        container.style.display = 'flex'
-        document.body.style.display = 'grid'
-        startButton.style.display = 'none'
-    }
-
-    let startButton = document.querySelector('.btn__start')
-    startButton.addEventListener('click', () => {
-        setDisplayElement()
-        gameBoard.createBoard()
-        gameBoard.addMark()
-    })
-})()
-
-
-
-
 
 

@@ -15,11 +15,28 @@
     <body>
         <h1 class="title">Tic Tac Toe</h1>
         <div class="container">
+            <h2 class="name__player1"></h2>
             <div class="gameboard"></div>
+            <h2 class="name__player2"></h2>
         </div>
-        <div class="buttons">
-            <button class="btn__start" type="button">Start</button>
-            <button class="btn__reset" type="button">Reset</button>
+        <div class="modal">
+            <div class="modal__content players">
+                <div class="input__box">
+                    <label for="player1">Player 1</label>
+                    <input type="text" id="player1" />
+                </div>
+                <div class="input__box">
+                    <label for="player2">Player 2</label>
+                    <input type="text" id="player2" />
+                </div>
+                <h2 class="error__message"></h2>
+                <button class="btn__start" type="button">Start</button>
+            </div>
+            <div class="modal__content winner">
+                <h2 class="name__winner"></h2>
+                <button class="btn__reset" type="button">Change Name</button>
+                <button class="btn__playagain" type="button">Play Again</button>
+            </div>
         </div>
         <script src="./script.js"></script>
     </body>
